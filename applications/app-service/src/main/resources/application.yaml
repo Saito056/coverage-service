@@ -1,0 +1,38 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: "coverage"
+  devtools:
+    add-properties: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
+adapter:
+  restconsumer:
+    # API Colombia. Orders espera 3 s por intento y Coverage hace hasta 2 consultas,
+    url: "https://api-colombia.com/api/v1"
+    timeout-ms: 2500
+coverage:
+  data:
+    # json (por defecto): lee coverage-data.json y no necesita AWS.
+    # dynamodb: lee vecinos y tarifas de la tabla de DynamoDB.
+    source: ${COVERAGE_DATA_SOURCE:json}
+  dynamodb:
+    table: ${COVERAGE_DYNAMODB_TABLE:coverage-config}
+    # true: al arrancar, carga en la tabla lo que falte desde coverage-data.json (no pisa datos)
+    seed-on-startup: ${COVERAGE_DYNAMODB_SEED:false}
+    cache-ttl-seconds: ${COVERAGE_DYNAMODB_CACHE_TTL:300}
+aws:
+  region: ${AWS_REGION:us-east-1}
+  dynamodb:
+    # Solo para DynamoDB Local (ej. http://localhost:8000). Dejar vacio en AWS.
+    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
