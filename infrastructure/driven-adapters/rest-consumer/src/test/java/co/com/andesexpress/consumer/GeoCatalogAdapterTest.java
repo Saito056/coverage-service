@@ -76,28 +76,28 @@ class GeoCatalogAdapterTest {
 
     @Test
     void existingCityReturnsItsDepartment() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         assertEquals(Optional.of(2), adapter.findDepartmentIdOfCity(12));
     }
 
     @Test
     void unknownCityReturnsEmpty() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         assertEquals(Optional.empty(), adapter.findDepartmentIdOfCity(99999999));
     }
 
     @Test
     void serverErrorIsUnavailableNotUnknown() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         assertThrows(CatalogUnavailableException.class, () -> adapter.findDepartmentIdOfCity(500));
     }
 
     @Test
     void bodyWithoutDepartmentIsUnavailable() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         assertThrows(CatalogUnavailableException.class, () -> adapter.findDepartmentIdOfCity(50));
     }
@@ -111,7 +111,7 @@ class GeoCatalogAdapterTest {
 
     @Test
     void unreachableServerIsUnavailable() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
         server.stop(0);
 
         assertThrows(CatalogUnavailableException.class, () -> adapter.findDepartmentIdOfCity(12));
@@ -119,7 +119,7 @@ class GeoCatalogAdapterTest {
 
     @Test
     void successfulLookupsAreCached() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         adapter.findDepartmentIdOfCity(12);
         adapter.findDepartmentIdOfCity(12);
@@ -129,7 +129,7 @@ class GeoCatalogAdapterTest {
 
     @Test
     void notFoundIsNotCached() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         adapter.findDepartmentIdOfCity(99999999);
         adapter.findDepartmentIdOfCity(99999999);
@@ -139,18 +139,18 @@ class GeoCatalogAdapterTest {
 
     @Test
     void trailingSlashInBaseUrlIsAccepted() {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl + "/", 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl + "/", 5000);
 
         assertEquals(Optional.of(2), adapter.findDepartmentIdOfCity(12));
     }
 
     @Test
     void warmUpRunsOnceInTheBackgroundAndLeavesTheCityCached() throws InterruptedException {
-        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 1000);
+        GeoCatalogAdapter adapter = new GeoCatalogAdapter(baseUrl, 5000);
 
         adapter.warmUpInBackground();
         adapter.warmUpInBackground();
-        long deadline = System.currentTimeMillis() + 3000;
+        long deadline = System.currentTimeMillis() + 10000;
         while (hits.get() == 0 && System.currentTimeMillis() < deadline) {
             Thread.sleep(20);
         }

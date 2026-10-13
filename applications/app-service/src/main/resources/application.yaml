@@ -15,7 +15,7 @@ management:
       probes:
         enabled: true
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8080}
 adapter:
   restconsumer:
     # API Colombia. Orders espera 3 s por intento y Coverage hace hasta 2 consultas,
